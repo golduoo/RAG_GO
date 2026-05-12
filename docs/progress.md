@@ -7,8 +7,8 @@
 ## 📍 当前位置
 
 - **Active Phase**: `Phase 1 - Baseline`
-- **Active Task**: `T1.6 - Dense 检索 Baseline`(未开始)
-- **下一步**:`view docs/tasks/phase-1.md`,从 T1.6 开始
+- **Active Task**: `T1.7 - LLM 调用封装`(未开始)
+- **下一步**:`view docs/tasks/phase-1.md`,从 T1.7 开始
 
 ---
 
@@ -38,7 +38,7 @@
 - [x] T1.3 数据下载与初步加工 (2026-05-13) — 备注: ADR-002 pivot 通用 RAG;DuReader 100k → 分层采样 8000 (1816 logistics + 6184 other);hf-mirror 直链下载
 - [x] T1.4 文档解析与切分 (2026-05-13) — 备注: FixedTokenSplitter (tiktoken cl100k_base) + RecursiveCharacterSplitter,默认 400/50;21 测试全绿
 - [x] T1.5 Embedding 与入库 (2026-05-13) — 备注: BGE-M3 fp16 on RTX 4060,10786 chunks,221.8s 总耗时;Milvus=ES=10786;ADR-003 ES standard fallback
-- [ ] T1.6 Dense 检索 Baseline
+- [x] T1.6 Dense 检索 Baseline (2026-05-13) — 备注: Retriever ABC + DenseRetriever (BGE-M3 + Milvus HNSW),7 mock 测试全绿,CLI 真实查询返回相关段落
 - [ ] T1.7 LLM 调用封装
 - [ ] T1.8 Baseline End-to-End
 - [ ] T1.9 评估集构造 + 初始指标
