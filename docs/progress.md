@@ -7,8 +7,8 @@
 ## 📍 当前位置
 
 - **Active Phase**: `Phase 1 - Baseline`
-- **Active Task**: `T1.4 - 文档解析与切分`(未开始)
-- **下一步**:`view docs/tasks/phase-1.md`,从 T1.4 开始
+- **Active Task**: `T1.5 - Embedding 与入库`(未开始)
+- **下一步**:`view docs/tasks/phase-1.md`,从 T1.5 开始
 
 ---
 
@@ -36,7 +36,7 @@
 - [x] T1.1 项目初始化 (2026-05-12) — 备注: uv 0.11.13 + Python 3.12,目录结构对齐 §rules/project.md;`uv run python -c "import src"` OK
 - [x] T1.2 基础设施 Docker Compose (2026-05-13) — 备注: 6 容器全 healthy;Milvus 2.4.15 / ES 8.15.3 / Neo4j 5.24.2 / Redis 7.4.9;新增 redis-py 客户端
 - [x] T1.3 数据下载与初步加工 (2026-05-13) — 备注: ADR-002 pivot 通用 RAG;DuReader 100k → 分层采样 8000 (1816 logistics + 6184 other);hf-mirror 直链下载
-- [ ] T1.4 文档解析与切分
+- [x] T1.4 文档解析与切分 (2026-05-13) — 备注: FixedTokenSplitter (tiktoken cl100k_base) + RecursiveCharacterSplitter,默认 400/50;21 测试全绿
 - [ ] T1.5 Embedding 与入库
 - [ ] T1.6 Dense 检索 Baseline
 - [ ] T1.7 LLM 调用封装
