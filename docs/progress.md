@@ -7,8 +7,8 @@
 ## 📍 当前位置
 
 - **Active Phase**: `Phase 1 - Baseline`
-- **Active Task**: `T1.1 - 项目初始化`(未开始)
-- **下一步**:`view docs/tasks/phase-1.md`,从 T1.1 开始
+- **Active Task**: `T1.2 - 基础设施 Docker Compose`(未开始)
+- **下一步**:`view docs/tasks/phase-1.md`,从 T1.2 开始
 
 ---
 
@@ -33,7 +33,7 @@
 ```
 
 ### Phase 1
-- [ ] T1.1 项目初始化
+- [x] T1.1 项目初始化 (2026-05-12) — 备注: uv 0.11.13 + Python 3.12,目录结构对齐 §rules/project.md;`uv run python -c "import src"` OK
 - [ ] T1.2 基础设施 Docker Compose
 - [ ] T1.3 数据下载与初步加工
 - [ ] T1.4 文档解析与切分
@@ -60,4 +60,4 @@
 
 | ADR | 标题 | 日期 |
 |-----|------|------|
-| - | (尚无) | - |
+| [001](decisions/ADR-001-pin-python-3.12.md) | 把项目 Python 钉到 3.12 | 2026-05-12 |
