@@ -76,3 +76,32 @@
 - 8000 docs → 10786 chunks 比 = 1.35,说明大部分文档单段即可,部分长文被切多段
 - BGE-M3 首次 load weights 约 0.2 s(权重已本地缓存),warmup 后稳定 52 chunks/s
 - 此阶段不涉及检索质量,Recall/MRR 在 T1.9 评估集就绪后产出
+
+## Phase 1 - Dense Baseline - 2026-05-13
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `DenseRetriever(BGE-M3 + Milvus HNSW M=16 efC=200, ef=64)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1.jsonl (100 samples)`
+- Collection: `chunks_v1`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.9310 | - |
+| Hit@3 | 0.9900 | - |
+| Recall@5 | 0.9572 | - |
+| Hit@5 | 1.0000 | - |
+| Recall@10 | 0.9755 | - |
+| Hit@10 | 1.0000 | - |
+| MRR | 0.9758 | - |
+
+**备注**:
+
+BGE-M3 + Milvus HNSW + FixedTokenSplitter(400/50) on chunks_v1 (10786 chunks)
+
