@@ -57,17 +57,23 @@
 ### T1.3 数据下载与初步加工
 **输入**:无
 **产出**:`data/processed/logistics_corpus.jsonl`
+
+> **变更说明(ADR-002)**:项目定位调整为"通用中文 RAG,以物流为示例 demo",
+> 因此本步骤改为"随机采样 + 物流软标签",而非硬关键词过滤。
+
 **步骤**:
-1. 写 `scripts/download_data.sh`,从 HuggingFace 拉 DuReader_retrieval 的 passage 集
+1. 写 `scripts/download_data.py`(+ `.sh` 薄封装),从 HuggingFace 拉 `C-MTEB/DuRetrieval` 的 corpus parquet(国内走 hf-mirror 镜像)
 2. 写 `scripts/filter_logistics.py`:
-   - 关键词:"快递|物流|运输|包裹|寄送|海关|赔付|运单|时效|配送|签收"
+   - 从 corpus 随机采样 ~8000 条(seed=42 固定,可 `--target-size` 调整)
+   - 长度过滤:`min_len=20`, `max_len=2000`
+   - 关键词作为**软标签**写入 metadata:`is_logistics: bool`,关键词列表 `快递|物流|运输|包裹|寄送|海关|赔付|运单|时效|配送|签收`
    - 输出格式:`Document` 模型的 jsonl(见 `docs/rules/data-schemas.md` §1)
-   - 控制规模:5000-10000 条
-3. 补充几份国家邮政局公开规章(手动放 `data/raw/regulations/`,数量 5-10 份就够)
+3. (可选)补充几份国家邮政局公开规章手动放 `data/raw/regulations/`,数量 5-10 份——demo 阶段做即可,非阻塞
 
 **DoD**:
 - `wc -l data/processed/logistics_corpus.jsonl` 在 [5000, 10000] 之间
-- 随机抽 10 条人工 check,确实和物流相关
+- 随机抽 10 条人工 check,内容多样,字段格式符合 Document schema
+- metadata 里 `is_logistics: true` 的子集行数约 1500–2500(便于后续物流子集评估)
 
 ---
 

@@ -7,8 +7,8 @@
 ## 📍 当前位置
 
 - **Active Phase**: `Phase 1 - Baseline`
-- **Active Task**: `T1.3 - 数据下载与初步加工`(未开始)
-- **下一步**:`view docs/tasks/phase-1.md`,从 T1.3 开始
+- **Active Task**: `T1.4 - 文档解析与切分`(未开始)
+- **下一步**:`view docs/tasks/phase-1.md`,从 T1.4 开始
 
 ---
 
@@ -35,7 +35,7 @@
 ### Phase 1
 - [x] T1.1 项目初始化 (2026-05-12) — 备注: uv 0.11.13 + Python 3.12,目录结构对齐 §rules/project.md;`uv run python -c "import src"` OK
 - [x] T1.2 基础设施 Docker Compose (2026-05-13) — 备注: 6 容器全 healthy;Milvus 2.4.15 / ES 8.15.3 / Neo4j 5.24.2 / Redis 7.4.9;新增 redis-py 客户端
-- [ ] T1.3 数据下载与初步加工
+- [x] T1.3 数据下载与初步加工 (2026-05-13) — 备注: ADR-002 pivot 通用 RAG;DuReader 100k → 分层采样 8000 (1816 logistics + 6184 other);hf-mirror 直链下载
 - [ ] T1.4 文档解析与切分
 - [ ] T1.5 Embedding 与入库
 - [ ] T1.6 Dense 检索 Baseline
@@ -61,3 +61,4 @@
 | ADR | 标题 | 日期 |
 |-----|------|------|
 | [001](decisions/ADR-001-pin-python-3.12.md) | 把项目 Python 钉到 3.12 | 2026-05-12 |
+| [002](decisions/ADR-002-pivot-to-general-chinese-rag.md) | 项目定位 → 通用中文 RAG(物流作 demo) | 2026-05-13 |
