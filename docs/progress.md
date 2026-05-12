@@ -7,8 +7,8 @@
 ## 📍 当前位置
 
 - **Active Phase**: `Phase 1 - Baseline`
-- **Active Task**: `T1.2 - 基础设施 Docker Compose`(未开始)
-- **下一步**:`view docs/tasks/phase-1.md`,从 T1.2 开始
+- **Active Task**: `T1.3 - 数据下载与初步加工`(未开始)
+- **下一步**:`view docs/tasks/phase-1.md`,从 T1.3 开始
 
 ---
 
@@ -34,7 +34,7 @@
 
 ### Phase 1
 - [x] T1.1 项目初始化 (2026-05-12) — 备注: uv 0.11.13 + Python 3.12,目录结构对齐 §rules/project.md;`uv run python -c "import src"` OK
-- [ ] T1.2 基础设施 Docker Compose
+- [x] T1.2 基础设施 Docker Compose (2026-05-13) — 备注: 6 容器全 healthy;Milvus 2.4.15 / ES 8.15.3 / Neo4j 5.24.2 / Redis 7.4.9;新增 redis-py 客户端
 - [ ] T1.3 数据下载与初步加工
 - [ ] T1.4 文档解析与切分
 - [ ] T1.5 Embedding 与入库

@@ -2039,7 +2039,7 @@ name = "milvus-lite"
 version = "2.4.12"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "tqdm" },
+    { name = "tqdm", marker = "python_full_version < '3.11' or sys_platform != 'win32'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/64/3a/110e46db650ced604f97307e48e353726cfa6d26b1bf72acb81bbf07ecbd/milvus_lite-2.4.12-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:e8d4f7cdd5f731efd6faeee3715d280fd91a5f9b4d89312664d56401f65b1473", size = 19843871, upload-time = "2025-03-21T06:20:26.141Z" },
@@ -3697,6 +3697,18 @@ wheels = [
 ]
 
 [[package]]
+name = "redis"
+version = "7.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "async-timeout", marker = "python_full_version < '3.11.3'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7b/7f/3759b1d0d72b7c92f0d70ffd9dc962b7b7b5ee74e135f9d7d8ab06b8a318/redis-7.4.0.tar.gz", hash = "sha256:64a6ea7bf567ad43c964d2c30d82853f8df927c5c9017766c55a1d1ed95d18ad", size = 4943913, upload-time = "2026-03-24T09:14:37.53Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/74/3a/95deec7db1eb53979973ebd156f3369a72732208d1391cd2e5d127062a32/redis-7.4.0-py3-none-any.whl", hash = "sha256:a9c74a5c893a5ef8455a5adb793a31bb70feb821c86eccb62eebef5a19c429ec", size = 409772, upload-time = "2026-03-24T09:14:35.968Z" },
+]
+
+[[package]]
 name = "regex"
 version = "2026.5.9"
 source = { registry = "https://pypi.org/simple" }
@@ -4306,6 +4318,7 @@ dependencies = [
     { name = "pymilvus" },
     { name = "python-dotenv" },
     { name = "ragas" },
+    { name = "redis" },
     { name = "sentence-transformers" },
     { name = "tenacity" },
     { name = "tqdm" },
@@ -4336,6 +4349,7 @@ requires-dist = [
     { name = "pymilvus", specifier = "==2.4.*" },
     { name = "python-dotenv", specifier = ">=1.0" },
     { name = "ragas", specifier = ">=0.2.0" },
+    { name = "redis", specifier = ">=5.0" },
     { name = "sentence-transformers", specifier = ">=3.0" },
     { name = "tenacity", specifier = ">=9.0" },
     { name = "tqdm", specifier = ">=4.66" },
