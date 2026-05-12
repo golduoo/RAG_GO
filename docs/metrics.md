@@ -105,3 +105,32 @@
 
 BGE-M3 + Milvus HNSW + FixedTokenSplitter(400/50) on chunks_v1 (10786 chunks)
 
+
+## Phase 1 - Dense Baseline (paraphrased eval, leak-resistant) - 2026-05-13
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `DenseRetriever(BGE-M3 + Milvus HNSW M=16 efC=200, ef=64)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1_paraphrased.jsonl (100 samples)`
+- Collection: `chunks_v1`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.8740 | - |
+| Hit@3 | 0.9300 | - |
+| Recall@5 | 0.9152 | - |
+| Hit@5 | 0.9600 | - |
+| Recall@10 | 0.9388 | - |
+| Hit@10 | 0.9700 | - |
+| MRR | 0.9116 | - |
+
+**备注**:
+
+用 DeepSeek 改写 eval_v1 的 question(避开原文关键词,口语化),gold_doc_ids 不变。对比泄漏版本看 Δ
+
