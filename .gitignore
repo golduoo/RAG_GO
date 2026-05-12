@@ -1,0 +1,62 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# venv / uv
+.venv/
+venv/
+env/
+.python-version
+
+# pytest / coverage / ruff / mypy
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ===== Go =====
+gateway/bin/
+*.exe
+*.exe~
+*.dll
+*.test
+*.out
+gateway/vendor/
+
+# ===== 数据(不入 git) =====
+data/raw/**
+!data/raw/README.md
+data/processed/**
+!data/processed/README.md
+data/eval/**
+!data/eval/README.md
+
+# 模型权重缓存
+.cache/
+models/
+
+# ===== 环境变量 =====
+.env
+.env.local
+.env.*.local
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
