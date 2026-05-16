@@ -9,8 +9,8 @@
 
 | # | 主题 | 状态 | 关联代码 |
 |---|------|------|---------|
-| 01 | [Embedding 与向量空间](01-embedding-and-vectors.md) | ⏳ 学习中 | `src/ingest/indexer.py` BGEEmbedder |
-| 02 | 向量库 & HNSW 索引 | ⬜ | `src/ingest/indexer.py` MilvusWriter |
+| 01 | [Embedding 与向量空间](01-embedding-and-vectors.md) | ✅ | `src/ingest/indexer.py` BGEEmbedder |
+| 02 | [向量库 & HNSW 索引](02-vector-db-and-hnsw.md) | ⏳ 学习中 | `src/ingest/indexer.py` MilvusWriter |
 | 03 | Chunking 策略 | ⬜ | `src/ingest/splitters.py` |
 | 04 | 检索质量评估 | ⬜ | `src/eval/metrics.py` |
 | 05 | LLM 调用工程(streaming / retry) | ⬜ | `src/generate/llm.py` |
