@@ -22,7 +22,7 @@
 |---|------|------|
 | 01 | [src/config.py](code-01-config.md) | ✅ |
 | 02 | [src/logger.py](code-02-logger.md) | ✅ |
-| 03 | src/ingest/schema.py | ⬜ |
+| 03 | [src/ingest/schema.py](code-03-schema.md) | ✅ |
 | 04 | src/ingest/splitters.py | ⬜ |
 | 05 | src/ingest/indexer.py | ⬜ |
 | 06 | scripts/ingest.py | ⬜ |
