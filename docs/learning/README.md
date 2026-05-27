@@ -24,7 +24,7 @@
 | 02 | [src/logger.py](code-02-logger.md) | ✅ |
 | 03 | [src/ingest/schema.py](code-03-schema.md) | ✅ |
 | 04 | [src/ingest/splitters.py](code-04-splitters.md) | ✅ |
-| 05 | src/ingest/indexer.py | ⬜ |
+| 05 | [src/ingest/indexer.py](code-05-indexer.md) | ✅ |
 | 06 | scripts/ingest.py | ⬜ |
 | 07 | src/retrieval/base.py + dense.py | ⬜ |
 | 08 | src/generate/prompts.py + llm.py | ⬜ |
