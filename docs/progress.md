@@ -6,9 +6,9 @@
 
 ## 📍 当前位置
 
-- **Active Phase**: `Phase 2 - 混合检索 + 多粒度切分`(等用户确认进入)
-- **Active Task**: `T2.0 - 装 ES ik 中文分词插件`(Phase 2 前置)
-- **下一步**:用户 review ADR-004,确认 Phase 1 收尾;然后 `view docs/tasks/phase-2.md` 启动
+- **Active Phase**: `Phase 2 - 混合检索 + 多粒度切分`(进行中)
+- **Active Task**: `T2.1 - 多粒度切分`(下一步)
+- **下一步**:`view docs/tasks/phase-2.md` T2.1;新增 `MultiGranularitySplitter`,重新 ingest 到 `chunks_v2`(建索引时指定 ik_smart,见 ADR-005)
 
 ---
 
@@ -43,7 +43,10 @@
 - [x] T1.8 Baseline End-to-End (2026-05-13) — 备注: RagPipeline (Retriever + LLM),6 mock 测试全绿,真实 E2E 答案带 [N] 引用 + 区分顺丰标准/特惠
 - [x] T1.9 评估集构造 + 初始指标 (2026-05-13) — 备注: 100 条 DeepSeek 合成 QA;Recall@3=0.931 Hit@5=1.0 MRR=0.976;指标高于预期(eval 泄漏,见 ADR-004 §4)
 
-### Phase 2-6
+### Phase 2
+- [x] T2.0 装 ES ik 中文分词插件 (2026-05-28) — 备注: analysis-ik 8.15.3 直链装入 ES 容器并重启;`_analyze` 验证 ik_smart 正确分词(物流/时效/退货/政策 成词,standard 逐字);不重建索引,留到 T2.1 ingest chunks_v2;见 ADR-005
+
+### Phase 3-6
 任务清单在对应的 `docs/tasks/phase-N.md`,完成时来这里勾选。
 
 ---
@@ -69,3 +72,4 @@
 | [002](decisions/ADR-002-pivot-to-general-chinese-rag.md) | 项目定位 → 通用中文 RAG(物流作 demo) | 2026-05-13 |
 | [003](decisions/ADR-003-es-analyzer-fallback.md) | Phase 1 ES 用 standard 分词器,Phase 2 切 ik_smart | 2026-05-13 |
 | [004](decisions/ADR-004-phase1-baseline.md) | Phase 1 收尾总结(含合成评估集泄漏警讯) | 2026-05-13 |
+| [005](decisions/ADR-005-install-ik-analyzer.md) | ES 安装 analysis-ik 中文分词插件(ik_smart) | 2026-05-28 |
