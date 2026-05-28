@@ -6,10 +6,10 @@
 
 ## 📍 当前位置
 
-- **Active Phase**: `Phase 2 - 混合检索 + 多粒度切分`(进行中)
-- **Active Task**: `T2.4 - Phase 2 评估`(下一步)
-- **下一步**:`view docs/tasks/phase-2.md` T2.4;run_eval 改文档级匹配 + 加 --retriever {dense,bm25,hybrid},跑消融三列,Phase 1 同口径重算
-- **待办(T2.4)**:评估改文档级匹配(已与用户对齐方向:hit.doc_id == gold.metadata.src_doc_id),Phase 1 同口径重算,写 ADR-006
+- **Active Phase**: `Phase 3 - Query 改写 + Rerank`(等用户确认进入)
+- **Active Task**: `T3.1 - 意图识别`(Phase 3 第一步)
+- **下一步**:`view docs/tasks/phase-3.md`。Phase 3 按 A+ 决策(ADR-007)做三路线对比:①Dense+rerank ②Hybrid+rerank ③Dense-only(baseline)。Hybrid 作候选生成层,Dense-only 保留为 fallback
+- **Phase 2 结论**:Hybrid 主用集未超 Dense(0.84 vs 0.94),根因 eval×语料(诊断见 ADR-007),靠 Phase 3 rerank 救 top-3 排序
 
 ---
 
@@ -18,7 +18,7 @@
 | Phase | 主题 | 状态 | 完成日期 | 关键产出指标 |
 |-------|------|------|---------|-------------|
 | 1 | Baseline:基础设施 + Dense 检索 | ✅ 完成 | 2026-05-13 | Recall@3=0.931 (合成评估,见 ADR-004) |
-| 2 | 混合检索 + 多粒度切分 | ⬜ 未开始 | - | Recall@3 ≥ baseline+8pp |
+| 2 | 混合检索 + 多粒度切分 | ✅ 完成 | 2026-05-28 | Recall@3 未提升(0.84 hybrid vs 0.94 dense,doc级抗泄漏);根因诊断见 ADR-007,转 A+ 进 Phase 3 |
 | 3 | Query 改写 + Rerank | ⬜ 未开始 | - | Top-3 准确率 ≥ 82% |
 | 4 | 评估体系 + GraphRAG | ⬜ 未开始 | - | RAGAS faithfulness ≥ 0.8 |
 | 5 | 工程化 + Go 网关 | ⬜ 未开始 | - | docker-compose 一键起 |
@@ -49,6 +49,7 @@
 - [x] T2.1 多粒度切分 (2026-05-28) — 备注: 新增 `MultiGranularitySplitter`(title/paragraph/sentence + qa/表格钩子),19 测试全绿;ingest chunks_v2 = 31900 chunks(para 10126 / sent 21761 / title 13),Milvus=ES=31900;ES 用 ik_smart;语料无 qa/表格;chunks_v1 保留
 - [x] T2.2 BM25 检索 (2026-05-28) — 备注: 新增 `BM25Retriever`(ES match + ik_smart),接口与 DenseRetriever 一致可热插拔;8 mock 测试全绿(全量 89);chunks_v2 真实查询命中相关顺丰时效段落
 - [x] T2.3 RRF 混合检索 (2026-05-28) — 备注: `reciprocal_rank_fusion`(k=60,分数累加/空路跳过/单路透传)+ `HybridRetriever`(ThreadPool 并行多路);14 测试全绿(全量 103);真实混合查询"特惠vs标快"top 命中精准
+- [x] T2.4 Phase 2 评估 (2026-05-28) — 备注: run_eval 加 --retriever/--match-level(doc 级,ADR-006);修 recall>1 bug + dense ef 抬升;8 组评估 + 诊断脚本。结论:Hybrid 主用集 R@3=0.84 < Dense 0.94,加权RRF/分型均救不回,根因 eval×语料(ADR-007);A+ 决策进 Phase 3
 
 ### Phase 3-6
 任务清单在对应的 `docs/tasks/phase-N.md`,完成时来这里勾选。
@@ -57,12 +58,26 @@
 
 ## 最近指标
 
+**chunk 级口径(Phase 1 历史)**:
+
 | Phase | Eval set | Recall@3 | Recall@5 | Recall@10 | MRR | 注 |
 |-------|----------|----------|----------|-----------|-----|-----|
 | 1 | eval_v1 (合成) | 0.9310 | 0.9572 | 0.9755 | 0.9758 | 有词面泄漏 |
-| 1 | eval_v1_paraphrased | 0.8740 | 0.9152 | 0.9388 | 0.9116 | **抗泄漏对照,后续 Phase 主用** |
+| 1 | eval_v1_paraphrased | 0.8740 | 0.9152 | 0.9388 | 0.9116 | 抗泄漏对照 |
 
-详见 `docs/metrics.md`。
+**doc 级口径(ADR-006,Phase 2 起主用;单 gold 故 Recall@k=Hit@k)**:
+
+| 配置 | Eval set | Recall@3 | Recall@10 | MRR |
+|------|----------|----------|-----------|-----|
+| Dense (chunks_v1) baseline | paraphrased | 0.9400 | 0.97 | 0.9151 |
+| Dense (chunks_v2) | paraphrased | 0.9400 | 0.98 | 0.8882 |
+| BM25 (chunks_v2) | paraphrased | 0.6500 | 0.75 | 0.6051 |
+| **Hybrid RRF (chunks_v2)** | paraphrased | **0.8400** | 0.97 | 0.8036 |
+| Dense (chunks_v1) | 合成 | 0.9900 | 1.00 | 0.9758 |
+| BM25 (chunks_v2) | 合成 | 1.0000 | 1.00 | 0.9667 |
+| Hybrid RRF (chunks_v2) | 合成 | 0.9900 | 1.00 | 0.9920 |
+
+> Phase 2 关键发现:抗泄漏集上 Hybrid < Dense(BM25 无词面可匹配);合成集上 Hybrid 最佳。详见 ADR-007 + `docs/metrics.md`。
 
 ---
 
@@ -77,3 +92,5 @@
 | [003](decisions/ADR-003-es-analyzer-fallback.md) | Phase 1 ES 用 standard 分词器,Phase 2 切 ik_smart | 2026-05-13 |
 | [004](decisions/ADR-004-phase1-baseline.md) | Phase 1 收尾总结(含合成评估集泄漏警讯) | 2026-05-13 |
 | [005](decisions/ADR-005-install-ik-analyzer.md) | ES 安装 analysis-ik 中文分词插件(ik_smart) | 2026-05-28 |
+| [006](decisions/ADR-006-doc-level-eval-matching.md) | 评估改文档级匹配(+修 recall>1 bug) | 2026-05-28 |
+| [007](decisions/ADR-007-phase2-hybrid-retrieval.md) | Phase 2 收尾:Hybrid 定位候选生成层(A+ 决策) | 2026-05-28 |

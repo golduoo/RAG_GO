@@ -2,14 +2,15 @@
 
 > 新对话接手前先读这份，再按 claude.md §0 启动协议走。
 > 记录"代码和 ADR 里没写、但接手必须知道"的环境与状态。
-> 最后更新：2026-05-28（Phase 2 进行中，T2.0/T2.1 完成，下一步 T2.2）
+> 最后更新：2026-05-28（Phase 2 完成，等确认进 Phase 3）
 
 ## 1. 当前状态
-- Phase 1 已完成（T1.1~T1.9 全绿），见 docs/progress.md、ADR-004
-- Phase 2 进行中：T2.0（ik 插件，ADR-005）+ T2.1（多粒度切分 + chunks_v2 入库）完成；下一步 T2.2 BM25
-- chunks_v2 已入库：Milvus=ES=31900（para 10126 / sent 21761 / title 13），ES 用 ik_smart；chunks_v1 保留
-- Phase 2 DoD 已校准：主对比用 eval_v1_paraphrased.jsonl，目标 +1~3pp（baseline 抗泄漏已 87%）
-- T2.4 待办：评估改“文档级匹配”（hit.doc_id == gold.metadata.src_doc_id），Phase 1 同口径重算，写 ADR-006（方向已与用户对齐）
+- Phase 1 已完成（T1.1~T1.9），见 ADR-004
+- **Phase 2 已完成（T2.0~T2.4，全量 105 测试绿）**：ik 插件(ADR-005) + 多粒度 chunks_v2 + BM25 + RRF Hybrid + doc 级评估(ADR-006)
+- chunks_v2：Milvus=ES=31900（para 10126 / sent 21761 / title 13），ES ik_smart；chunks_v1 保留作 baseline
+- **Phase 2 结论(ADR-007)**：doc 级抗泄漏集上 Hybrid R@3=0.84 < Dense 0.94，加权RRF/分型都救不回，根因=eval刻意去词面重叠+BGE-M3近上限；合成集上 Hybrid 最佳。**A+ 决策**：Hybrid 作 Phase 3 候选生成层，Dense-only 留作 baseline/fallback
+- 评估口径已切 doc 级（ADR-006）：`run_eval.py --match-level doc`(默认) + `--retriever {dense,bm25,hybrid}`；诊断脚本 `scripts/analyze_phase2.py`
+- 下一步 Phase 3：三路线对比 ①Dense+rerank ②Hybrid+rerank ③Dense-only，见 phase-3.md
 - GitHub: https://github.com/golduoo/RAG_GO (main)
 - baseline: Recall@3=0.931（合成 eval）/ 0.874（抗泄漏 paraphrased eval）
 
