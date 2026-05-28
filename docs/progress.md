@@ -6,9 +6,10 @@
 
 ## 📍 当前位置
 
-- **Active Phase**: `Phase 3 - Query 改写 + Rerank`(等用户确认进入)
-- **Active Task**: `T3.1 - 意图识别`(Phase 3 第一步)
-- **下一步**:`view docs/tasks/phase-3.md`。Phase 3 按 A+ 决策(ADR-007)做三路线对比:①Dense+rerank ②Hybrid+rerank ③Dense-only(baseline)。Hybrid 作候选生成层,Dense-only 保留为 fallback
+- **Active Phase**: `Phase 3 - Query 改写 + Rerank`(进行中)
+- **Active Task**: `T3.5 - 三路线对比评估`(下一步)
+- **下一步**:用 RerankRetriever 跑三路线 doc 级评估:①Dense+rerank ②Hybrid+rerank ③Dense-only(baseline)。reranker 已下载并跑通(稳态 ~180ms/50 候选)
+- **已完成**:T3.4 Cross-Encoder rerank(先做,A+ 决策核心);T3.1 意图/T3.2 HyDE/T3.3 Multi-Query 暂缓
 - **Phase 2 结论**:Hybrid 主用集未超 Dense(0.84 vs 0.94),根因 eval×语料(诊断见 ADR-007),靠 Phase 3 rerank 救 top-3 排序
 
 ---
@@ -51,7 +52,10 @@
 - [x] T2.3 RRF 混合检索 (2026-05-28) — 备注: `reciprocal_rank_fusion`(k=60,分数累加/空路跳过/单路透传)+ `HybridRetriever`(ThreadPool 并行多路);14 测试全绿(全量 103);真实混合查询"特惠vs标快"top 命中精准
 - [x] T2.4 Phase 2 评估 (2026-05-28) — 备注: run_eval 加 --retriever/--match-level(doc 级,ADR-006);修 recall>1 bug + dense ef 抬升;8 组评估 + 诊断脚本。结论:Hybrid 主用集 R@3=0.84 < Dense 0.94,加权RRF/分型均救不回,根因 eval×语料(ADR-007);A+ 决策进 Phase 3
 
-### Phase 3-6
+### Phase 3
+- [x] T3.4 Cross-Encoder Rerank (2026-05-28) — 备注: `CrossEncoderReranker`(bge-reranker-v2-m3,transformers 后端绕开 FlagReranker tokenizer 不兼容)+ `RerankRetriever` 包装器(可热插拔);下载模型 + .env 改本地路径;10 测试全绿(全量 115);真实重排 top-3 全命中正确文档,稳态 180ms/50 候选(首次 warmup 已内置)
+
+### Phase 4-6
 任务清单在对应的 `docs/tasks/phase-N.md`,完成时来这里勾选。
 
 ---
