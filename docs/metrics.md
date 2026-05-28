@@ -175,3 +175,243 @@ BGE-M3 + Milvus HNSW + FixedTokenSplitter(400/50) on chunks_v1 (10786 chunks)
 - 语料为 DuReader 纯文本,**无 FAQ(qa)/ 表格数据**,故无 `qa` 粒度、无表格摘要块;title 仅 13 条(命中"第X章/节/条")
 - chunks_v1 保留未动(10786),供 T2.4 同口径对比
 
+
+## Phase 1 - Dense-baseline-doclevel - 2026-05-28
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `DenseRetriever(BGE-M3 + Milvus HNSW M=16 efC=200, ef=64)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1_paraphrased.jsonl (100 samples)`
+- Collection: `chunks_v1`
+- Match level: `doc`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.9400 | - |
+| Hit@3 | 0.9400 | - |
+| Recall@5 | 0.9600 | - |
+| Hit@5 | 0.9600 | - |
+| Recall@10 | 0.9700 | - |
+| Hit@10 | 0.9700 | - |
+| MRR | 0.9151 | - |
+
+**备注**:
+
+Phase1 dense recomputed at doc-level on chunks_v1 (paraphrased eval)
+
+
+## Phase 2 - Dense-only-v2 - 2026-05-28
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `DenseRetriever(BGE-M3 + Milvus HNSW M=16 efC=200, ef=64)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1_paraphrased.jsonl (100 samples)`
+- Collection: `chunks_v2`
+- Match level: `doc`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.9400 | - |
+| Hit@3 | 0.9400 | - |
+| Recall@5 | 0.9700 | - |
+| Hit@5 | 0.9700 | - |
+| Recall@10 | 0.9800 | - |
+| Hit@10 | 0.9800 | - |
+| MRR | 0.8882 | - |
+
+**备注**:
+
+Phase2 dense-only on chunks_v2 multi-granularity (paraphrased eval)
+
+
+## Phase 2 - BM25-only-v2 - 2026-05-28
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `BM25Retriever(ES ik_smart)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1_paraphrased.jsonl (100 samples)`
+- Collection: `chunks_v2`
+- Match level: `doc`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.6500 | - |
+| Hit@3 | 0.6500 | - |
+| Recall@5 | 0.6900 | - |
+| Hit@5 | 0.6900 | - |
+| Recall@10 | 0.7500 | - |
+| Hit@10 | 0.7500 | - |
+| MRR | 0.6051 | - |
+
+**备注**:
+
+Phase2 bm25-only on chunks_v2 ik_smart (paraphrased eval)
+
+
+## Phase 2 - Hybrid-RRF-v2 - 2026-05-28
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `HybridRetriever(Dense + BM25, RRF k=60)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1_paraphrased.jsonl (100 samples)`
+- Collection: `chunks_v2`
+- Match level: `doc`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.8400 | - |
+| Hit@3 | 0.8400 | - |
+| Recall@5 | 0.9100 | - |
+| Hit@5 | 0.9100 | - |
+| Recall@10 | 0.9700 | - |
+| Hit@10 | 0.9700 | - |
+| MRR | 0.8036 | - |
+
+**备注**:
+
+Phase2 hybrid RRF k=60 dense+bm25 on chunks_v2 (paraphrased eval)
+
+
+## Phase 1 - Dense-baseline-doclevel-synth - 2026-05-28
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `DenseRetriever(BGE-M3 + Milvus HNSW M=16 efC=200, ef=64)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1.jsonl (100 samples)`
+- Collection: `chunks_v1`
+- Match level: `doc`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.9900 | - |
+| Hit@3 | 0.9900 | - |
+| Recall@5 | 1.0000 | - |
+| Hit@5 | 1.0000 | - |
+| Recall@10 | 1.0000 | - |
+| Hit@10 | 1.0000 | - |
+| MRR | 0.9758 | - |
+
+**备注**:
+
+synthetic-eval
+
+
+## Phase 2 - Dense-only-v2-synth - 2026-05-28
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `DenseRetriever(BGE-M3 + Milvus HNSW M=16 efC=200, ef=64)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1.jsonl (100 samples)`
+- Collection: `chunks_v2`
+- Match level: `doc`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.9800 | - |
+| Hit@3 | 0.9800 | - |
+| Recall@5 | 0.9800 | - |
+| Hit@5 | 0.9800 | - |
+| Recall@10 | 0.9900 | - |
+| Hit@10 | 0.9900 | - |
+| MRR | 0.9667 | - |
+
+**备注**:
+
+synthetic-eval
+
+
+## Phase 2 - BM25-only-v2-synth - 2026-05-28
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `BM25Retriever(ES ik_smart)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1.jsonl (100 samples)`
+- Collection: `chunks_v1`
+- Match level: `doc`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 1.0000 | - |
+| Hit@3 | 1.0000 | - |
+| Recall@5 | 1.0000 | - |
+| Hit@5 | 1.0000 | - |
+| Recall@10 | 1.0000 | - |
+| Hit@10 | 1.0000 | - |
+| MRR | 0.9667 | - |
+
+**备注**:
+
+synthetic-eval
+
+
+## Phase 2 - Hybrid-RRF-v2-synth - 2026-05-28
+
+**配置**:
+
+- Embedding: `models/bge-m3`
+- Retriever: `HybridRetriever(Dense + BM25, RRF k=60)`
+- Reranker: `none`
+- LLM: `none (retrieval-only eval)`
+- Eval set: `data\eval\eval_v1.jsonl (100 samples)`
+- Collection: `chunks_v2`
+- Match level: `doc`
+- top_k: `10`
+
+**主指标**:
+
+| Metric | Value | Δ vs baseline |
+|--------|-------|---------------|
+| Recall@3 | 0.9900 | - |
+| Hit@3 | 0.9900 | - |
+| Recall@5 | 1.0000 | - |
+| Hit@5 | 1.0000 | - |
+| Recall@10 | 1.0000 | - |
+| Hit@10 | 1.0000 | - |
+| MRR | 0.9920 | - |
+
+**备注**:
+
+synthetic-eval
+

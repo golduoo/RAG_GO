@@ -21,12 +21,16 @@ def hit_at_k(retrieved: Sequence[str], gold: Sequence[str], k: int) -> float:
 
 
 def recall_at_k(retrieved: Sequence[str], gold: Sequence[str], k: int) -> float:
-    """top-K 召回 = (top-K 中 gold 数) / |gold|。"""
+    """top-K 召回 = (top-K 中命中的不同 gold 数) / |gold|。
+
+    用集合交集,避免 retrieved 中重复 id(如 doc 级口径下同文档多 chunk)被重复计数
+    导致召回 > 1。
+    """
     if not gold or k <= 0:
         return 0.0
     gold_set = set(gold)
-    hits = sum(1 for r in retrieved[:k] if r in gold_set)
-    return hits / len(gold_set)
+    found = set(retrieved[:k]) & gold_set
+    return len(found) / len(gold_set)
 
 
 def reciprocal_rank(retrieved: Sequence[str], gold: Sequence[str]) -> float:

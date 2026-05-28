@@ -59,10 +59,17 @@ class DenseRetriever(Retriever):
             return []
 
         vec = self.embedder.encode([query])[0]
+        # HNSW 要求 ef >= limit(k);深检索时按需抬高 ef,否则 Milvus 报 out of range
+        params = {
+            **self.search_params,
+            "params": dict(self.search_params.get("params", {})),
+        }
+        if params["params"].get("ef", 0) < top_k:
+            params["params"]["ef"] = top_k
         results = self.collection.search(
             data=[vec],
             anns_field="vector",
-            param=self.search_params,
+            param=params,
             limit=top_k,
             output_fields=list(DEFAULT_OUTPUT_FIELDS),
         )

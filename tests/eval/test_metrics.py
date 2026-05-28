@@ -53,6 +53,11 @@ class TestRecallAtK:
     def test_recall_zero(self):
         assert recall_at_k(["a", "b"], ["c"], k=2) == 0.0
 
+    def test_recall_duplicate_retrieved_capped_at_one(self):
+        # doc 级口径下 retrieved 可能有重复 id(同文档多 chunk);
+        # 重复命中不应让 recall > 1
+        assert recall_at_k(["d1", "d1", "d1"], ["d1"], k=3) == 1.0
+
 
 # ---------------------------------------------------------------------------
 # reciprocal_rank

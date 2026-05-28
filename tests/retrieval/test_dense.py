@@ -11,7 +11,9 @@ from src.retrieval.dense import DenseRetriever
 
 
 @pytest.fixture
-def retriever(mock_embedder: MagicMock, mock_milvus_collection: MagicMock) -> DenseRetriever:
+def retriever(
+    mock_embedder: MagicMock, mock_milvus_collection: MagicMock
+) -> DenseRetriever:
     return DenseRetriever(
         collection_name="chunks_v1_test",
         embedder=mock_embedder,
@@ -53,6 +55,14 @@ class TestDenseRetrieverSearch:
         assert kwargs["limit"] == 5
         assert kwargs["anns_field"] == "vector"
 
+    def test_ef_bumped_when_topk_exceeds_default(
+        self, retriever: DenseRetriever, mock_milvus_collection: MagicMock
+    ):
+        # 默认 ef=64;请求 top_k=100 时应把 ef 抬到 >=100,否则 Milvus HNSW 报错
+        retriever.search("query", top_k=100)
+        _, kwargs = mock_milvus_collection.search.call_args
+        assert kwargs["param"]["params"]["ef"] >= 100
+
     def test_empty_query_returns_empty(self, retriever: DenseRetriever):
         assert retriever.search("", top_k=3) == []
         assert retriever.search("   ", top_k=3) == []
@@ -67,9 +77,13 @@ class TestDenseRetrieverSearch:
         assert md["granularity"] == "paragraph"
         assert md["corpus"] == "test"
 
-    def test_batch_search(self, retriever: DenseRetriever, mock_milvus_collection: MagicMock):
+    def test_batch_search(
+        self, retriever: DenseRetriever, mock_milvus_collection: MagicMock
+    ):
         results = retriever.batch_search(["a", "b"], top_k=2)
         assert len(results) == 2
-        assert all(len(r) == 3 for r in results)  # mock 总是返 3 条,top_k=2 没生效因为 mock 写死
+        assert all(
+            len(r) == 3 for r in results
+        )  # mock 总是返 3 条,top_k=2 没生效因为 mock 写死
         # mock 被调了 2 次(每条 query 一次)
         assert mock_milvus_collection.search.call_count == 2
