@@ -2,12 +2,14 @@
 
 > 新对话接手前先读这份，再按 claude.md §0 启动协议走。
 > 记录"代码和 ADR 里没写、但接手必须知道"的环境与状态。
-> 最后更新：2026-05-28（Phase 2 进行中，T2.0 完成，下一步 T2.1）
+> 最后更新：2026-05-28（Phase 2 进行中，T2.0/T2.1 完成，下一步 T2.2）
 
 ## 1. 当前状态
 - Phase 1 已完成（T1.1~T1.9 全绿），见 docs/progress.md、ADR-004
-- Phase 2 进行中：T2.0 完成（ES 装 ik 插件，见 ADR-005）；下一步 T2.1 多粒度切分
+- Phase 2 进行中：T2.0（ik 插件，ADR-005）+ T2.1（多粒度切分 + chunks_v2 入库）完成；下一步 T2.2 BM25
+- chunks_v2 已入库：Milvus=ES=31900（para 10126 / sent 21761 / title 13），ES 用 ik_smart；chunks_v1 保留
 - Phase 2 DoD 已校准：主对比用 eval_v1_paraphrased.jsonl，目标 +1~3pp（baseline 抗泄漏已 87%）
+- T2.4 待办：评估改“文档级匹配”（hit.doc_id == gold.metadata.src_doc_id），Phase 1 同口径重算，写 ADR-006（方向已与用户对齐）
 - GitHub: https://github.com/golduoo/RAG_GO (main)
 - baseline: Recall@3=0.931（合成 eval）/ 0.874（抗泄漏 paraphrased eval）
 

@@ -134,3 +134,44 @@ BGE-M3 + Milvus HNSW + FixedTokenSplitter(400/50) on chunks_v1 (10786 chunks)
 
 用 DeepSeek 改写 eval_v1 的 question(避开原文关键词,口语化),gold_doc_ids 不变。对比泄漏版本看 Δ
 
+
+## Phase 2 - Ingest chunks_v2(多粒度 + ik) - 2026-05-28
+
+> T2.1 入库记录(性能 + 计数 + 粒度分布),非检索质量。检索对比在 T2.4 产出。
+
+**配置**:
+- Embedding: `models/bge-m3` (fp16)
+- Splitter: `MultiGranularitySplitter(paragraph_size=400, paragraph_overlap=50, sentence_max=150)`
+- 粒度: title(正则识别)/ paragraph(复用 RecursiveCharacterSplitter)/ sentence(中文句末标点贪心合并)
+- Milvus: collection `chunks_v2`,HNSW `M=16 efConstruction=200` COSINE,1024 维
+- ES: index `chunks_v2`,**ik_smart** analyzer(ADR-005,插件已装)
+- 输入: 8000 Documents → 31900 Chunks
+- Device: NVIDIA RTX 4060 Laptop 8GB,CUDA 12.8;batch_size 32
+
+**性能**:
+
+| Stage | Time | Notes |
+|-------|------|-------|
+| Document load + split | <1 s | 31900 chunks 切分 |
+| Embedding (31900 × 1024-dim, fp16) | 593.4 s | GPU,~54 chunks/s |
+| Dual write (Milvus + ES) | 62.1 s | bulk insert |
+| **总耗时** | **664.5 s** | ~11 min |
+
+**计数验证**:
+- chunks 切分: 31900
+- Milvus `chunks_v2.num_entities`: 31900 ✓
+- ES `chunks_v2` doc count: 31900 ✓
+
+**粒度分布**:
+
+| granularity | count | 占比 |
+|-------------|-------|------|
+| paragraph | 10126 | 31.7% |
+| sentence | 21761 | 68.2% |
+| title | 13 | 0.04% |
+
+**备注**:
+- 8000 docs → 31900 chunks(约 4.0×),paragraph 数(10126)与 chunks_v1(10786)同量级,sentence 是新增的细粒度层
+- 语料为 DuReader 纯文本,**无 FAQ(qa)/ 表格数据**,故无 `qa` 粒度、无表格摘要块;title 仅 13 条(命中"第X章/节/条")
+- chunks_v1 保留未动(10786),供 T2.4 同口径对比
+

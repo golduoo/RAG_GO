@@ -11,6 +11,7 @@ import argparse
 import json
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 
 from tqdm import tqdm
@@ -22,6 +23,7 @@ from src.ingest.indexer import (
     ESWriter,
     MilvusWriter,
 )
+from src.ingest.multi_granularity import MultiGranularitySplitter
 from src.ingest.schema import Chunk, Document
 from src.ingest.splitters import FixedTokenSplitter
 from src.logger import logger
@@ -36,12 +38,35 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--collection", default=settings.milvus_collection)
     p.add_argument("--es-index", default=settings.es_index)
     p.add_argument("--drop", action="store_true", help="清空已有 collection / index")
-    p.add_argument("--limit", type=int, default=0, help="只处理前 N 条 Document(0 = 全部)")
+    p.add_argument(
+        "--limit", type=int, default=0, help="只处理前 N 条 Document(0 = 全部)"
+    )
     p.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
     p.add_argument("--chunk-size", type=int, default=400)
     p.add_argument("--chunk-overlap", type=int, default=50)
+    p.add_argument(
+        "--splitter",
+        choices=("fixed", "multi"),
+        default="fixed",
+        help="fixed=FixedTokenSplitter(Phase1) / multi=MultiGranularitySplitter(Phase2)",
+    )
+    p.add_argument(
+        "--sentence-max", type=int, default=150, help="multi: 句子级最大字符数"
+    )
     p.add_argument("--use-ik", action="store_true", help="ES 用 ik_smart(需已装插件)")
     return p.parse_args()
+
+
+def build_splitter(args: argparse.Namespace):
+    if args.splitter == "multi":
+        return MultiGranularitySplitter(
+            paragraph_size=args.chunk_size,
+            paragraph_overlap=args.chunk_overlap,
+            sentence_max=args.sentence_max,
+        )
+    return FixedTokenSplitter(
+        chunk_size=args.chunk_size, chunk_overlap=args.chunk_overlap
+    )
 
 
 def load_documents(path: Path, limit: int = 0) -> list[Document]:
@@ -68,10 +93,14 @@ def main() -> int:
     docs = load_documents(args.input, args.limit)
     logger.info(f"loaded {len(docs)} documents")
 
-    splitter = FixedTokenSplitter(chunk_size=args.chunk_size, chunk_overlap=args.chunk_overlap)
+    splitter = build_splitter(args)
     t_split = time.time()
     chunks: list[Chunk] = splitter.split_documents(docs)
-    logger.info(f"split into {len(chunks)} chunks ({time.time() - t_split:.1f}s)")
+    dist = Counter(c.granularity for c in chunks)
+    logger.info(
+        f"split into {len(chunks)} chunks ({time.time() - t_split:.1f}s) "
+        f"splitter={args.splitter} granularity={dict(dist)}"
+    )
 
     if not chunks:
         logger.error("no chunks produced, aborting")
