@@ -12,7 +12,9 @@ import pytest
 def mock_embedder() -> MagicMock:
     """伪 BGEEmbedder:返回固定 3 维向量。"""
     emb = MagicMock()
-    emb.encode = MagicMock(side_effect=lambda texts, **kw: [[0.1, 0.2, 0.3] for _ in texts])
+    emb.encode = MagicMock(
+        side_effect=lambda texts, **kw: [[0.1, 0.2, 0.3] for _ in texts]
+    )
     return emb
 
 
@@ -65,3 +67,31 @@ def mock_milvus_collection() -> MagicMock:
     col.search = MagicMock(return_value=[sample_hits])
     col.load = MagicMock(return_value=None)
     return col
+
+
+@pytest.fixture
+def mock_es_client() -> MagicMock:
+    """伪 Elasticsearch:search() 返回 3 个 BM25 hit(降序 _score)。"""
+    es = MagicMock()
+    es.indices.exists = MagicMock(return_value=True)
+
+    def make_hit(_id: str, doc_id: str, score: float, text: str):
+        return {
+            "_id": _id,
+            "_score": score,
+            "_source": {
+                "id": _id,
+                "doc_id": doc_id,
+                "text": text,
+                "granularity": "paragraph",
+                "metadata": {"corpus": "test"},
+            },
+        }
+
+    hits = [
+        make_hit("doc-1-0", "doc-1", 12.5, "顺丰特快从上海到北京一般 1 个工作日。"),
+        make_hit("doc-2-0", "doc-2", 8.3, "EMS 速度比顺丰慢,价格便宜。"),
+        make_hit("doc-3-0", "doc-3", 4.1, "京东物流次日达覆盖一二线城市。"),
+    ]
+    es.search = MagicMock(return_value={"hits": {"hits": hits}})
+    return es

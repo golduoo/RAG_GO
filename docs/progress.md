@@ -7,8 +7,8 @@
 ## 📍 当前位置
 
 - **Active Phase**: `Phase 2 - 混合检索 + 多粒度切分`(进行中)
-- **Active Task**: `T2.2 - BM25 检索`(下一步)
-- **下一步**:`view docs/tasks/phase-2.md` T2.2;`src/retrieval/sparse.py` 写 `BM25Retriever`(基于 ES ik_smart,接口与 DenseRetriever 一致)
+- **Active Task**: `T2.3 - RRF 混合检索`(下一步,核心)
+- **下一步**:`view docs/tasks/phase-2.md` T2.3;`src/retrieval/hybrid.py` 写 `reciprocal_rank_fusion` + `HybridRetriever`(并行 Dense+BM25,RRF k=60)
 - **待办(T2.4)**:评估改文档级匹配(已与用户对齐方向),Phase 1 同口径重算,写 ADR-006
 
 ---
@@ -47,6 +47,7 @@
 ### Phase 2
 - [x] T2.0 装 ES ik 中文分词插件 (2026-05-28) — 备注: analysis-ik 8.15.3 直链装入 ES 容器并重启;`_analyze` 验证 ik_smart 正确分词(物流/时效/退货/政策 成词,standard 逐字);不重建索引,留到 T2.1 ingest chunks_v2;见 ADR-005
 - [x] T2.1 多粒度切分 (2026-05-28) — 备注: 新增 `MultiGranularitySplitter`(title/paragraph/sentence + qa/表格钩子),19 测试全绿;ingest chunks_v2 = 31900 chunks(para 10126 / sent 21761 / title 13),Milvus=ES=31900;ES 用 ik_smart;语料无 qa/表格;chunks_v1 保留
+- [x] T2.2 BM25 检索 (2026-05-28) — 备注: 新增 `BM25Retriever`(ES match + ik_smart),接口与 DenseRetriever 一致可热插拔;8 mock 测试全绿(全量 89);chunks_v2 真实查询命中相关顺丰时效段落
 
 ### Phase 3-6
 任务清单在对应的 `docs/tasks/phase-N.md`,完成时来这里勾选。
